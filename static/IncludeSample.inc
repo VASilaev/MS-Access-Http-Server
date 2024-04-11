@@ -1,0 +1,1 @@
+Это содержимое из файла &quot;IncludeSample.inc&quot;
