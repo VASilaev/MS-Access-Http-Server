@@ -140,7 +140,7 @@ function ProcessRequest(req, res, server)
     s = ErrorPage(localContext, s, """")
   end if
   on error goto 0     
-  res.SetBodyText(s)
+  if s <> "" then res.SetBodyText(s)
   ProcessRequest = FinalizeContext(localContext) 
 end function 
 
@@ -153,11 +153,8 @@ function Include(byval sPath)
   content = split(ObjFSO.OpenTextFile(sPath).ReadAll,""<`%"")  
   write content(0)
   for i = 1 to ubound(content)
-    LocalContent = sPageContent:  sPageContent = """": tmp = split(content(i),""`%>"")
-    sBlockCode = tmp(0)
-    execute sBlockCode
-    sBlockCode = """"
-    CurContent = sPageContent: sPageContent = LocalContent: Write CurContent: CurContent = """": LocalContent = """"
+    tmp = split(content(i),""`%>"")
+    sBlockCode = tmp(0): execute sBlockCode: sBlockCode = """"
     if uBound(tmp) > 0 then Write tmp(1)
   next
   content = Empty
@@ -169,7 +166,7 @@ function ProcessVBFile(req, res, server)
   on error resume next: err.clear  
   Include (req.queries(""path""))
   if err.number > 0 then
-    dim sError: sPageContent = err.Source & "": "" & err.description & vbCrLf & ""Source: "" & sLastFile
+    sPageContent = err.Source & "": "" & err.description & vbCrLf & ""Source: "" & sLastFile
     on error goto 0
     sPageContent = ErrorPage(CurrentContext, sPageContent, sBlockCode)
   end if
